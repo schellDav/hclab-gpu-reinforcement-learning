@@ -1,6 +1,6 @@
 # Teaching a Car to Drive: DQN on CarRacing, CPU vs. GPU
 
-*David Schell · 28.10.2026 · HCLab – GPU & Reinforcement Learning*
+*David Schell · 29.10.2026 · HCLab – GPU & Reinforcement Learning*
 
 ---
 
