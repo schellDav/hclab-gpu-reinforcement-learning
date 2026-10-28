@@ -2,6 +2,8 @@
 
 *David Schell · 29.10.2026 · HCLab – GPU & Reinforcement Learning*
 
+![Final agent driving](report/images/final_agent.gif)
+
 ---
 
 ## 1. The problem
@@ -95,11 +97,34 @@ Setup: GPU, batch size = 128, episodes = 50.
 
 ## 7. Final agent
 
-Configuration: batch size **512**, γ = **0.95**, **500** episodes on the GPU (the best values from experiments 2 and 3).
+Configuration: batch size **512**, γ = **0.95**, **500** episodes on the GPU (the best values from experiments 2 and 3). Training time: **3744.86 s (62.4 min)**, i.e. 7.5 s per episode and 23.7 ms per step.
 
-*Training is still running. Results, the reward curve and a video of the agent will follow.*
+![Final agent driving](report/images/final_agent.gif)
+*Greedy policy of the trained agent (checkpoint after 500 episodes): it completes a full lap with a score of 904.*
+
+![Reward per episode of the final run](report/images/final_reward.png)
+*Reward per episode over 500 episodes (unsmoothed).*
+
+| Episodes | Avg. reward | Max reward | Avg. loss |
+|---|---|---|---|
+| 1–50 | −30.1 | 245.3 | 0.028 |
+| 51–100 | 351.6 | 685.3 | 0.054 |
+| 101–200 | 551.7 | 864.3 | 0.071 |
+| 201–300 | 624.6 | 906.5 | 0.073 |
+| 301–400 | 687.1 | 905.1 | 0.090 |
+| 401–500 | 683.9 | 900.8 | 0.100 |
+
+![Epsilon over episodes](report/images/final_epsilon.png)
+*Exploration rate ε: it hits its minimum of 0.05 after ~20 episodes.*
+
+**Observations:**
+
+- **Fast breakthrough after episode 50:** the average reward jumps from −30 to 352 in episodes 51–100. The 50-episode runs from experiments 1–3 stopped right before this point.
+- **Plateau from episode ~300:** the average stays at ~685, so more episodes bring little extra benefit with this setup. 49 episodes reached > 800, and 4 reached > 900 (best: 906.5 in episode 300).
+- **Exploration ends early:** `eps_decay = 1000` is counted in steps, not episodes. ε is below 0.1 after only 10 episodes, so the agent learns almost entirely from its own greedy behavior.
+- **The loss rises over time** (0.028 → 0.100). This is expected in DQN: as the agent collects higher rewards, the Q-values and therefore the TD errors grow, so the loss is no measure of how well the agent drives.
 
 ## 8. Conclusion
 
-*Coming soon.*
+The GPU speeds up training by up to 2.64×, but it stays at ~15–20 % utilization because the Gymnasium environment and the Python batch assembly run on the CPU. That is also why larger batches are almost free on the GPU and were worth using. A slightly higher discount factor (γ = 0.95) helped the agent plan ahead for corners. With batch size 512 and γ = 0.95, the agent went from random driving to completing full laps (average reward ~685, best 906.5) in about one hour of training on an RTX 5060 Ti.
 
